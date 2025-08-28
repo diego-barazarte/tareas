@@ -1,9 +1,11 @@
 import axios from 'axios';
 import React, { useEffect, useState } from 'react';
 import {
+  ActivityIndicator,
   Button,
   FlatList,
   ListRenderItem,
+  Modal,
   Text,
   TextInput,
   TouchableOpacity,
@@ -24,27 +26,31 @@ const API_URL = 'https://jsonplaceholder.typicode.com/todos';
 const TodoApp: React.FC = () => {
   const [tasks, setTasks] = useState<Task[]>([]);
   const [taskText, setTaskText] = useState('');
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [refreshing, setRefreshing] = useState(false);
+  const [modalVisible, setModalVisible] = useState(false);
 
   // 1. Obtener tareas del API
   const fetchTasks = async () => {
+    setLoading(true);
     try {
       const response = await axios.get(API_URL);
       const data: Task[] = response.data;
       setTasks(data.reverse()); // Últimas tareas primero
     } catch (error) {
-      if (axios.isAxiosError(error)) {
-        // Si el error es un error de Axios
-        console.error('Error fetching tasks:', error.response?.data || error.message);
-      } else {
-        // Si el error no es de Axios
-        console.error('Unexpected error fetching tasks:', error);
-      }
+      setError('Error al cargar las tareas.');
+    } finally {
+      setLoading(false);
     }
   };
 
   // 2. Crear nueva tarea
   const createTask = async () => {
-    if (taskText.trim() === '') return;
+    if (taskText.trim().length < 3) {
+      alert('El título debe tener al menos 3 caracteres.');
+      return;
+    }
 
     const newTask: Omit<Task, 'id'> = {
       title: taskText,
@@ -61,12 +67,9 @@ const TodoApp: React.FC = () => {
       const createdTask: Task = response.data;
       setTasks((prevTasks) => [...prevTasks, createdTask]); // Agregar nueva tarea al final
       setTaskText('');
+      setModalVisible(false); // Cerrar el modal después de crear la tarea
     } catch (error) {
-      if (axios.isAxiosError(error)) {
-        console.error('Error creating task:', error.response?.data || error.message);
-      } else {
-        console.error('Unexpected error creating task:', error);
-      }
+      setError('Error al crear la tarea.');
     }
   };
 
@@ -93,11 +96,7 @@ const TodoApp: React.FC = () => {
         );
       }
     } catch (error) {
-      if (axios.isAxiosError(error)) {
-        console.error('Error toggling task:', error.response?.data || error.message);
-      } else {
-        console.error('Unexpected error toggling task:', error);
-      }
+      setError('Error al actualizar la tarea.');
     }
   };
 
@@ -110,12 +109,15 @@ const TodoApp: React.FC = () => {
         setTasks((prevTasks) => prevTasks.filter((task) => task.id !== taskId));
       }
     } catch (error) {
-      if (axios.isAxiosError(error)) {
-        console.error('Error deleting task:', error.response?.data || error.message);
-      } else {
-        console.error('Unexpected error deleting task:', error);
-      }
+      setError('Error al eliminar la tarea.');
     }
+  };
+
+  // 5. Recargar tareas
+  const onRefresh = async () => {
+    setRefreshing(true);
+    await fetchTasks();
+    setRefreshing(false);
   };
 
   useEffect(() => {
@@ -139,19 +141,38 @@ const TodoApp: React.FC = () => {
     <View style={styles.container}>
       <Text style={styles.title}>To-Do List</Text>
 
-      <TextInput
-        style={styles.input}
-        placeholder="Nueva tarea"
-        value={taskText}
-        onChangeText={setTaskText}
-      />
-      <Button title="Agregar Tarea" onPress={createTask} />
+      {/* Mostrar modal para agregar tarea */}
+      <Button title="Agregar Tarea" onPress={() => setModalVisible(true)} />
 
-      <FlatList
-        data={tasks}
-        keyExtractor={(item) => item.id.toString()}
-        renderItem={renderItem}
-      />
+      {/* Modal para crear una nueva tarea */}
+      <Modal visible={modalVisible} animationType="slide">
+        <View style={styles.modalContainer}>
+          <TextInput
+            style={styles.input}
+            placeholder="Nueva tarea"
+            value={taskText}
+            onChangeText={setTaskText}
+          />
+          <Button title="Guardar" onPress={createTask} />
+          <Button title="Cancelar" onPress={() => setModalVisible(false)} />
+        </View>
+      </Modal>
+
+      {/* Mostrar errores */}
+      {error && <Text style={styles.errorText}>{error}</Text>}
+
+      {/* Cargar tareas */}
+      {loading ? (
+        <ActivityIndicator size="large" color="#0000ff" />
+      ) : (
+        <FlatList
+          data={tasks}
+          keyExtractor={(item) => item.id.toString()}
+          renderItem={renderItem}
+          onRefresh={onRefresh}
+          refreshing={refreshing}
+        />
+      )}
     </View>
   );
 };

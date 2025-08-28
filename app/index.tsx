@@ -1,3 +1,4 @@
+import axios from 'axios';
 import React, { useEffect, useState } from 'react';
 import {
   Button,
@@ -27,11 +28,17 @@ const TodoApp: React.FC = () => {
   // 1. Obtener tareas del API
   const fetchTasks = async () => {
     try {
-      const response = await fetch(API_URL);
-      const data: Task[] = await response.json();
+      const response = await axios.get(API_URL);
+      const data: Task[] = response.data;
       setTasks(data.reverse()); // Últimas tareas primero
     } catch (error) {
-      console.error('Error fetching tasks:', error);
+      if (axios.isAxiosError(error)) {
+        // Si el error es un error de Axios
+        console.error('Error fetching tasks:', error.response?.data || error.message);
+      } else {
+        // Si el error no es de Axios
+        console.error('Unexpected error fetching tasks:', error);
+      }
     }
   };
 
@@ -45,19 +52,21 @@ const TodoApp: React.FC = () => {
     };
 
     try {
-      const response = await fetch(API_URL, {
-        method: 'POST',
+      const response = await axios.post(API_URL, newTask, {
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify(newTask),
       });
 
-      const createdTask: Task = await response.json();
-      setTasks((prevTasks) => [createdTask, ...prevTasks]); // Agregar nueva tarea al principio
+      const createdTask: Task = response.data;
+      setTasks((prevTasks) => [...prevTasks, createdTask]); // Agregar nueva tarea al final
       setTaskText('');
     } catch (error) {
-      console.error('Error creating task:', error);
+      if (axios.isAxiosError(error)) {
+        console.error('Error creating task:', error.response?.data || error.message);
+      } else {
+        console.error('Unexpected error creating task:', error);
+      }
     }
   };
 
@@ -72,38 +81,40 @@ const TodoApp: React.FC = () => {
     };
 
     try {
-      const response = await fetch(`${API_URL}/${taskId}`, {
-        method: 'PUT',
+      const response = await axios.put(`${API_URL}/${taskId}`, updatedTask, {
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify(updatedTask),
       });
 
-      if (response.ok) {
+      if (response.status === 200) {
         setTasks((prevTasks) =>
-          prevTasks.map((task) =>
-            task.id === taskId ? updatedTask : task
-          )
+          prevTasks.map((task) => (task.id === taskId ? updatedTask : task))
         );
       }
     } catch (error) {
-      console.error('Error toggling task:', error);
+      if (axios.isAxiosError(error)) {
+        console.error('Error toggling task:', error.response?.data || error.message);
+      } else {
+        console.error('Unexpected error toggling task:', error);
+      }
     }
   };
 
   // 4. Eliminar tarea
   const deleteTask = async (taskId: number) => {
     try {
-      const response = await fetch(`${API_URL}/${taskId}`, {
-        method: 'DELETE',
-      });
+      const response = await axios.delete(`${API_URL}/${taskId}`);
 
-      if (response.ok) {
+      if (response.status === 200) {
         setTasks((prevTasks) => prevTasks.filter((task) => task.id !== taskId));
       }
     } catch (error) {
-      console.error('Error deleting task:', error);
+      if (axios.isAxiosError(error)) {
+        console.error('Error deleting task:', error.response?.data || error.message);
+      } else {
+        console.error('Unexpected error deleting task:', error);
+      }
     }
   };
 

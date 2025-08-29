@@ -8,7 +8,7 @@ import {
   Text,
   TextInput,
   TouchableOpacity,
-  View
+  View,
 } from 'react-native';
 import { MaterialIcons } from 'react-native-vector-icons'; // Importando los íconos
 import styles from './styles';
@@ -136,6 +136,7 @@ const TodoApp: React.FC = () => {
   return (
     <View style={styles.container}>
       <Text style={styles.title}>To-Do List</Text>
+
       {/* Cambiar el botón de agregar tarea */}
       <TouchableOpacity style={styles.button} onPress={() => setModalVisible(true)}>
         <Text style={styles.buttonText}>Agregar Tarea</Text>
@@ -143,9 +144,10 @@ const TodoApp: React.FC = () => {
 
       <Modal visible={modalVisible} animationType="slide">
         <View style={styles.modalContainer}>
-          <TextInput
-            style={styles.input}
-            placeholder="Nueva tarea"
+        <TextInput
+            style={styles.modalInput}
+            placeholder="Agregar nueva tarea..."
+            placeholderTextColor="#7f8c8d"
             value={taskText}
             onChangeText={setTaskText}
           />

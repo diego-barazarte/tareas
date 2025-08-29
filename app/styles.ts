@@ -65,27 +65,41 @@ const styles = StyleSheet.create({
     backgroundColor: '#fff',
     padding: 30,
     borderRadius: 15,
-    width: '80%',
+    width: '60%',
     maxWidth: 400,
     elevation: 5,
   },
   modalInput: {
     height: 45,
-    borderColor: '#3498DB',
+    borderColor: '#bf014a',
     borderWidth: 2,
     marginBottom: 20,
     paddingLeft: 15,
     backgroundColor: '#fff',
     borderRadius: 10,
     fontSize: 18,
+    width: '60%',
   },
   modalButton: {
     backgroundColor: '#bf014a',
-    padding: 15,
+    paddingVertical: 15,
     borderRadius: 10,
-    marginTop: 10,
+    width: '60%',
+    marginBottom: 10,
   },
   modalButtonText: {
+    color: '#fff',
+    fontSize: 18,
+    textAlign: 'center',
+  },
+  button: {
+    backgroundColor: '#bf014a',
+    paddingVertical: 10,
+    paddingHorizontal: 20,
+    borderRadius: 10,
+    marginTop: 20,
+  },
+  buttonText: {
     color: '#fff',
     fontSize: 18,
     textAlign: 'center',
@@ -98,19 +112,6 @@ const styles = StyleSheet.create({
   },
   activityIndicator: {
     marginTop: 50,
-  },
-
-  button: {
-    backgroundColor: '#bf014a',
-    paddingVertical: 10,
-    paddingHorizontal: 20,
-    borderRadius: 10,
-    marginTop: 20,
-  },
-  buttonText: {
-    color: '#fff',
-    fontSize: 18,
-    textAlign: 'center',
   },
 });
 

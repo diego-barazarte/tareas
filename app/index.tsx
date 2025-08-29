@@ -11,16 +11,18 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
+import { MaterialIcons } from 'react-native-vector-icons'; // Importando los íconos
 import styles from './styles';
+
+// URL de la API
+const API_URL = 'http://localhost:5000/tasks';
 
 // Tipo de tarea
 type Task = {
-  _id: string; // Cambiado para reflejar el _id generado por MongoDB
+  _id: string;
   title: string;
   completed: boolean;
 };
-
-const API_URL = 'http://localhost:5000/tasks';
 
 const TodoApp: React.FC = () => {
   const [tasks, setTasks] = useState<Task[]>([]);
@@ -58,9 +60,7 @@ const TodoApp: React.FC = () => {
 
     try {
       const response = await axios.post(API_URL, newTask, {
-        headers: {
-          'Content-Type': 'application/json',
-        },
+        headers: { 'Content-Type': 'application/json' },
       });
 
       const createdTask: Task = response.data;
@@ -84,9 +84,7 @@ const TodoApp: React.FC = () => {
 
     try {
       const response = await axios.put(`${API_URL}/${taskId}`, updatedTask, {
-        headers: {
-          'Content-Type': 'application/json',
-        },
+        headers: { 'Content-Type': 'application/json' },
       });
 
       if (response.status === 200) {
@@ -103,15 +101,14 @@ const TodoApp: React.FC = () => {
   const deleteTask = async (taskId: string) => {
     try {
       const response = await axios.delete(`${API_URL}/${taskId}`);
-  
+
       if (response.status === 204) {
-         onRefresh();
+        onRefresh();
       }
     } catch (error) {
       setError('Error al eliminar la tarea.');
     }
   };
-  
 
   // Recargar tareas
   const onRefresh = async () => {
@@ -132,7 +129,7 @@ const TodoApp: React.FC = () => {
         </Text>
       </TouchableOpacity>
       <TouchableOpacity onPress={() => deleteTask(item._id)}>
-        <Text style={styles.deleteText}>Eliminar</Text>
+        <MaterialIcons name="delete" size={24} color="#E74C3C" />
       </TouchableOpacity>
     </View>
   );
@@ -140,11 +137,8 @@ const TodoApp: React.FC = () => {
   return (
     <View style={styles.container}>
       <Text style={styles.title}>To-Do List</Text>
-
-      {/* Mostrar modal para agregar tarea */}
       <Button title="Agregar Tarea" onPress={() => setModalVisible(true)} />
 
-      {/* Modal para crear una nueva tarea */}
       <Modal visible={modalVisible} animationType="slide">
         <View style={styles.modalContainer}>
           <TextInput
@@ -158,16 +152,14 @@ const TodoApp: React.FC = () => {
         </View>
       </Modal>
 
-      {/* Mostrar errores */}
       {error && <Text style={styles.errorText}>{error}</Text>}
 
-      {/* Cargar tareas */}
       {loading ? (
-        <ActivityIndicator size="large" color="#0000ff" />
+        <ActivityIndicator size="large" color="#3498DB" style={styles.activityIndicator} />
       ) : (
         <FlatList
           data={tasks}
-          keyExtractor={(item) => item._id} // Asegúrate de usar _id como clave
+          keyExtractor={(item) => item._id}
           renderItem={renderItem}
           onRefresh={onRefresh}
           refreshing={refreshing}

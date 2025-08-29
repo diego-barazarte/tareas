@@ -15,8 +15,7 @@ import styles from './styles';
 
 // Tipo de tarea
 type Task = {
-  userId?: number;
-  id: string;
+  _id: string; // Cambiado para reflejar el _id generado por MongoDB
   title: string;
   completed: boolean;
 };
@@ -37,7 +36,7 @@ const TodoApp: React.FC = () => {
     try {
       const response = await axios.get(API_URL);
       const data: Task[] = response.data;
-      setTasks(data.reverse());
+      setTasks(data.reverse()); // Últimas tareas primero
     } catch (error) {
       setError('Error al cargar las tareas.');
     } finally {
@@ -52,7 +51,7 @@ const TodoApp: React.FC = () => {
       return;
     }
 
-    const newTask: Omit<Task, 'id'> = {
+    const newTask: Omit<Task, '_id'> = {
       title: taskText,
       completed: false,
     };
@@ -75,7 +74,7 @@ const TodoApp: React.FC = () => {
 
   // Marcar tarea como completada
   const toggleTaskCompletion = async (taskId: string) => {
-    const taskToUpdate = tasks.find((task) => task.id === taskId);
+    const taskToUpdate = tasks.find((task) => task._id === taskId);
     if (!taskToUpdate) return;
 
     const updatedTask: Task = {
@@ -92,7 +91,7 @@ const TodoApp: React.FC = () => {
 
       if (response.status === 200) {
         setTasks((prevTasks) =>
-          prevTasks.map((task) => (task.id === taskId ? updatedTask : task))
+          prevTasks.map((task) => (task._id === taskId ? updatedTask : task))
         );
       }
     } catch (error) {
@@ -104,14 +103,15 @@ const TodoApp: React.FC = () => {
   const deleteTask = async (taskId: string) => {
     try {
       const response = await axios.delete(`${API_URL}/${taskId}`);
-
-      if (response.status === 200) {
-        setTasks((prevTasks) => prevTasks.filter((task) => task.id !== taskId));
+  
+      if (response.status === 204) {
+         onRefresh();
       }
     } catch (error) {
       setError('Error al eliminar la tarea.');
     }
   };
+  
 
   // Recargar tareas
   const onRefresh = async () => {
@@ -126,12 +126,12 @@ const TodoApp: React.FC = () => {
 
   const renderItem: ListRenderItem<Task> = ({ item }) => (
     <View style={styles.taskItem}>
-      <TouchableOpacity onPress={() => toggleTaskCompletion(item.id)}>
+      <TouchableOpacity onPress={() => toggleTaskCompletion(item._id)}>
         <Text style={[styles.taskText, item.completed && styles.completedTask]}>
           {item.title}
         </Text>
       </TouchableOpacity>
-      <TouchableOpacity onPress={() => deleteTask(item.id)}>
+      <TouchableOpacity onPress={() => deleteTask(item._id)}>
         <Text style={styles.deleteText}>Eliminar</Text>
       </TouchableOpacity>
     </View>
@@ -167,7 +167,7 @@ const TodoApp: React.FC = () => {
       ) : (
         <FlatList
           data={tasks}
-          keyExtractor={(item) => item.id}
+          keyExtractor={(item) => item._id} // Asegúrate de usar _id como clave
           renderItem={renderItem}
           onRefresh={onRefresh}
           refreshing={refreshing}

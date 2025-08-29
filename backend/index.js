@@ -9,7 +9,6 @@ const PORT = 5000;
 app.use(cors());
 app.use(bodyParser.json());
 
-
 mongoose.connect('mongodb://localhost/to-doApp', {
   useNewUrlParser: true,
   useUnifiedTopology: true,
@@ -55,6 +54,11 @@ app.post('/tasks', async (req, res) => {
 // Marcar una tarea como completada
 app.put('/tasks/:id', async (req, res) => {
   const { id } = req.params;
+  
+  if (!mongoose.Types.ObjectId.isValid(id)) {
+    return res.status(400).send('ID de tarea no válido');
+  }
+
   try {
     const task = await Task.findById(id);
     if (!task) {
@@ -72,6 +76,11 @@ app.put('/tasks/:id', async (req, res) => {
 // Eliminar una tarea
 app.delete('/tasks/:id', async (req, res) => {
   const { id } = req.params;
+  
+  if (!mongoose.Types.ObjectId.isValid(id)) {
+    return res.status(400).send('ID de tarea no válido');
+  }
+
   try {
     const result = await Task.findByIdAndDelete(id);
     if (!result) {

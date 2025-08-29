@@ -16,12 +16,12 @@ import styles from './styles';
 // Tipo de tarea
 type Task = {
   userId?: number;
-  id: number;
+  id: string;
   title: string;
   completed: boolean;
 };
 
-const API_URL = 'https://jsonplaceholder.typicode.com/todos';
+const API_URL = 'http://localhost:5000/tasks';
 
 const TodoApp: React.FC = () => {
   const [tasks, setTasks] = useState<Task[]>([]);
@@ -31,13 +31,13 @@ const TodoApp: React.FC = () => {
   const [refreshing, setRefreshing] = useState(false);
   const [modalVisible, setModalVisible] = useState(false);
 
-  // 1. Obtener tareas del API
+  // Obtener tareas del API
   const fetchTasks = async () => {
     setLoading(true);
     try {
       const response = await axios.get(API_URL);
       const data: Task[] = response.data;
-      setTasks(data.reverse()); // Últimas tareas primero
+      setTasks(data.reverse());
     } catch (error) {
       setError('Error al cargar las tareas.');
     } finally {
@@ -45,7 +45,7 @@ const TodoApp: React.FC = () => {
     }
   };
 
-  // 2. Crear nueva tarea
+  // Crear nueva tarea
   const createTask = async () => {
     if (taskText.trim().length < 3) {
       alert('El título debe tener al menos 3 caracteres.');
@@ -54,7 +54,7 @@ const TodoApp: React.FC = () => {
 
     const newTask: Omit<Task, 'id'> = {
       title: taskText,
-      completed: false, // Nuevas tareas por defecto no están completas
+      completed: false,
     };
 
     try {
@@ -65,16 +65,16 @@ const TodoApp: React.FC = () => {
       });
 
       const createdTask: Task = response.data;
-      setTasks((prevTasks) => [...prevTasks, createdTask]); // Agregar nueva tarea al final
+      setTasks((prevTasks) => [...prevTasks, createdTask]);
       setTaskText('');
-      setModalVisible(false); // Cerrar el modal después de crear la tarea
+      setModalVisible(false);
     } catch (error) {
       setError('Error al crear la tarea.');
     }
   };
 
-  // 3. Marcar como completada
-  const toggleTaskCompletion = async (taskId: number) => {
+  // Marcar tarea como completada
+  const toggleTaskCompletion = async (taskId: string) => {
     const taskToUpdate = tasks.find((task) => task.id === taskId);
     if (!taskToUpdate) return;
 
@@ -100,8 +100,8 @@ const TodoApp: React.FC = () => {
     }
   };
 
-  // 4. Eliminar tarea
-  const deleteTask = async (taskId: number) => {
+  // Eliminar tarea
+  const deleteTask = async (taskId: string) => {
     try {
       const response = await axios.delete(`${API_URL}/${taskId}`);
 
@@ -113,7 +113,7 @@ const TodoApp: React.FC = () => {
     }
   };
 
-  // 5. Recargar tareas
+  // Recargar tareas
   const onRefresh = async () => {
     setRefreshing(true);
     await fetchTasks();
@@ -167,7 +167,7 @@ const TodoApp: React.FC = () => {
       ) : (
         <FlatList
           data={tasks}
-          keyExtractor={(item) => item.id.toString()}
+          keyExtractor={(item) => item.id}
           renderItem={renderItem}
           onRefresh={onRefresh}
           refreshing={refreshing}

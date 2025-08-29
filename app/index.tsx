@@ -2,14 +2,13 @@ import axios from 'axios';
 import React, { useEffect, useState } from 'react';
 import {
   ActivityIndicator,
-  Button,
   FlatList,
   ListRenderItem,
   Modal,
   Text,
   TextInput,
   TouchableOpacity,
-  View,
+  View
 } from 'react-native';
 import { MaterialIcons } from 'react-native-vector-icons'; // Importando los íconos
 import styles from './styles';
@@ -137,7 +136,10 @@ const TodoApp: React.FC = () => {
   return (
     <View style={styles.container}>
       <Text style={styles.title}>To-Do List</Text>
-      <Button title="Agregar Tarea" onPress={() => setModalVisible(true)} />
+      {/* Cambiar el botón de agregar tarea */}
+      <TouchableOpacity style={styles.button} onPress={() => setModalVisible(true)}>
+        <Text style={styles.buttonText}>Agregar Tarea</Text>
+      </TouchableOpacity>
 
       <Modal visible={modalVisible} animationType="slide">
         <View style={styles.modalContainer}>
@@ -147,8 +149,12 @@ const TodoApp: React.FC = () => {
             value={taskText}
             onChangeText={setTaskText}
           />
-          <Button title="Guardar" onPress={createTask} />
-          <Button title="Cancelar" onPress={() => setModalVisible(false)} />
+          <TouchableOpacity style={styles.modalButton} onPress={createTask}>
+            <Text style={styles.modalButtonText}>Guardar</Text>
+          </TouchableOpacity>
+          <TouchableOpacity style={styles.modalButton} onPress={() => setModalVisible(false)}>
+            <Text style={styles.modalButtonText}>Cancelar</Text>
+          </TouchableOpacity>
         </View>
       </Modal>
 

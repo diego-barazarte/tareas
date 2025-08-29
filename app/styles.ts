@@ -4,18 +4,18 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     padding: 20,
-    backgroundColor: '#F4F7FC', // Azul suave de fondo
+    backgroundColor: '#F4F7FC',
   },
   title: {
     fontSize: 30,
     textAlign: 'center',
     marginBottom: 20,
-    fontWeight: '700',  // Mayor peso para hacer el título más destacado
-    color: '#2C3E50', // Gris oscuro para el título
+    fontWeight: '700',
+    color: '#2C3E50',
   },
   input: {
     height: 45,
-    borderColor: '#3498DB',  // Azul más fuerte
+    borderColor: '#3498DB',
     borderWidth: 2,
     marginBottom: 15,
     paddingLeft: 15,
@@ -41,8 +41,6 @@ const styles = StyleSheet.create({
     shadowOffset: { width: 0, height: 2 },
     shadowRadius: 5,
     elevation: 3,
-    transform: [{ scale: 1 }],
-    transition: 'transform 0.2s ease',
   },
   taskText: {
     fontSize: 18,
@@ -53,7 +51,7 @@ const styles = StyleSheet.create({
     color: '#BDC3C7',
   },
   deleteText: {
-    color: '#E74C3C', // Rojo para el delete
+    color: '#E74C3C',
     fontWeight: 'bold',
     fontSize: 18,
   },
@@ -82,7 +80,7 @@ const styles = StyleSheet.create({
     fontSize: 18,
   },
   modalButton: {
-    backgroundColor: '#3498DB',
+    backgroundColor: '#bf014a',
     padding: 15,
     borderRadius: 10,
     marginTop: 10,
@@ -100,6 +98,19 @@ const styles = StyleSheet.create({
   },
   activityIndicator: {
     marginTop: 50,
+  },
+
+  button: {
+    backgroundColor: '#bf014a',
+    paddingVertical: 10,
+    paddingHorizontal: 20,
+    borderRadius: 10,
+    marginTop: 20,
+  },
+  buttonText: {
+    color: '#fff',
+    fontSize: 18,
+    textAlign: 'center',
   },
 });
 
